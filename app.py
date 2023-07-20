@@ -1,6 +1,6 @@
 from gevent import monkey
 monkey.patch_all()
-#insecure origin treated as secure chrome://flags/
+#insecure origin treated as secure , MediaFoundation Video Capture chrome://flags/
 import base64
 import cv2
 import numpy as np
@@ -15,7 +15,7 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent import monkey
 from geventwebsocket.handler import WebSocketHandler
 app = Flask(__name__, template_folder="templates")
-CORS(app)
+CORS(app, resources={r"/socket.io/*": {"origins": "http://13.233.165.48:5000"}})
 app.config['SECRET_KEY'] = 'secret@123'  # Replace with your secret key
 socketio = SocketIO(app,  async_mode='gevent', cors_allowed_origins="*", websocket=True)
 
