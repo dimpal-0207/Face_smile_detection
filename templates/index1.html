@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Webcam Streaming</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Webcam Streaming</h1>
+    <video id="video" autoplay></video>
+
+    <script>
+        const socket = io.connect('http://192.168.1.8:5000');
+
+        // Access the video element
+        const video = document.getElementById('video');
+
+        // Access the video stream from the webcam
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+
+                    // Function to send video frames to the server
+                    function sendFrame() {
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+
+                        // Set the canvas size to match the video stream
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+
+                        // Draw the current frame on the canvas
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        // Convert the canvas image to a data URL or Blob
+                        const frameData = canvas.toDataURL();
+
+                        // Send the frame data to the server via SocketIO
+                        socket.emit('stream_frame', frameData);
+
+                        // Schedule the next frame
+                        requestAnimationFrame(sendFrame);
+                    }
+
+                    // Start sending video frames to the server
+                    sendFrame();
+                })
+                .catch((error) => {
+                    console.error('Error accessing video stream:', error);
+                });
+        } else {
+            console.error('getUserMedia is not supported in this browser.');
+        }
+
+        // Receive smile detection result from the server
+        socket.on('smile_detection_result', (smileDetected) => {
+            if (smileDetected) {
+                // Display a message or perform some action indicating smile detection
+                console.log('Smile detected!');
+            } else {
+                // Display a message or perform some action indicating no smile detected
+                console.log('No smile detected.');
+            }
+        });
+    </script>
+</body>
+</html>

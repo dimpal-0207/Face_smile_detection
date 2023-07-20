@@ -1,0 +1,192 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Smile Detection</title>-->
+<!--    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>-->
+<!--    <script>-->
+<!--        const socket = io();-->
+
+<!--        // Access the video element-->
+<!--        const video = document.getElementById('video');-->
+
+<!--        // Access the video stream from the webcam-->
+<!--       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {-->
+<!--            navigator.mediaDevices.getUserMedia({ video: true })-->
+<!--                .then((stream) => {-->
+<!--                    video.srcObject = stream;-->
+
+<!--                    // Function to send video frames to the server-->
+<!--                    function sendFrame() {-->
+<!--                        const canvas = document.createElement('canvas');-->
+<!--                        const context = canvas.getContext('2d');-->
+
+<!--                        // Set the canvas size to match the video stream-->
+<!--                        canvas.width = video.videoWidth;-->
+<!--                        canvas.height = video.videoHeight;-->
+
+<!--                        // Draw the current frame on the canvas-->
+<!--                        context.drawImage(video, 0, 0, canvas.width, canvas.height);-->
+
+<!--                        // Convert the canvas image to a data URL or Blob-->
+<!--                        const frameData = canvas.toDataURL(); // or canvas.toBlob()-->
+
+<!--                        // Send the frame data to the server via SocketIO-->
+<!--                        socket.emit('stream_frame', frameData);-->
+
+<!--                        // Schedule the next frame-->
+<!--                        requestAnimationFrame(sendFrame);-->
+<!--                    }-->
+
+<!--                    // Start sending video frames to the server-->
+<!--                    sendFrame();-->
+<!--                })-->
+<!--                .catch((error) => {-->
+<!--                    console.error('Error accessing video stream:', error);-->
+<!--                });-->
+<!--        } else {-->
+<!--            console.error('getUserMedia is not supported in this browser.');-->
+<!--        }-->
+
+<!--        // Receive smile detection result from the server-->
+<!--        socket.on('smile_detection_result', (smileDetected) => {-->
+<!--            if (smileDetected) {-->
+<!--                // Display a message or perform some action indicating smile detection-->
+<!--                console.log('Smile detected!');-->
+<!--            } else {-->
+<!--                // Display a message or perform some action indicating no smile detected-->
+<!--                console.log('No smile detected.');-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <video id="video" autoplay></video>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Webcam Streaming</title>-->
+<!--    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1>Webcam Streaming</h1>-->
+<!--    <video id="video" autoplay></video>-->
+<!--    <canvas id="canvas" style="display: none;"></canvas>-->
+<!--    <div id="result"></div>-->
+
+<!--    <script>-->
+<!--        const socket = io("http://127.0.0.1:5000");-->
+<!--        const video = document.getElementById('video');-->
+<!--        const canvas = document.getElementById('canvas');-->
+<!--        const resultDiv = document.getElementById('result');-->
+<!--        const context = canvas.getContext('2d');-->
+
+<!--        // Access the webcam stream-->
+<!--        navigator.mediaDevices.getUserMedia({ video: true })-->
+<!--            .then((stream) => {-->
+<!--                video.srcObject = stream;-->
+
+<!--                // Function to send video frames to the server-->
+<!--                function sendFrame() {-->
+<!--                    // Set the canvas size to match the video stream-->
+<!--                    canvas.width = video.videoWidth;-->
+<!--                    canvas.height = video.videoHeight;-->
+
+<!--                    // Draw the current frame on the canvas-->
+<!--                    context.drawImage(video, 0, 0, canvas.width, canvas.height);-->
+
+<!--                    // Convert the canvas image to a data URL or Blob-->
+<!--                    const frameData = canvas.toDataURL();-->
+
+<!--                    // Send the frame data to the server via SocketIO-->
+<!--&lt;!&ndash;                    console.log(frameData);&ndash;&gt;-->
+<!--                    socket.emit('stream_frame', frameData);-->
+
+<!--                    // Schedule the next frame-->
+<!--                    requestAnimationFrame(sendFrame());-->
+<!--                }-->
+
+<!--                // Start sending video frames to the server-->
+<!--                sendFrame();-->
+<!--            })-->
+<!--            .catch((error) => {-->
+<!--                console.error('Error accessing video stream:', error);-->
+<!--            });-->
+
+<!--        // Receive smile detection result from the server-->
+<!--    const socket = io();-->
+
+<!--    socket.on('smile_detected', (data) => {-->
+<!--        if (data.smile) {-->
+<!--            // Display a message or perform an action when a smile is detected-->
+<!--            console.log('Smile detected!');-->
+<!--        } else {-->
+<!--            // Display a message or perform an action when no smile is detected-->
+<!--            console.log('No smile detected.');-->
+<!--        }-->
+<!--});-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Streaming</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+
+            // Access the video element
+            const video = document.getElementById('video');
+
+            // Access the video stream from the webcam
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then((stream) => {
+                        video.srcObject = stream;
+
+                        // Function to send video frames to the server
+                        function sendFrame() {
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+
+                            // Set the canvas size to match the video stream
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+
+                            // Draw the current frame on the canvas
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                            // Convert the canvas image to a data URL or Blob
+                            const frameData = canvas.toDataURL(); // or canvas.toBlob()
+
+                            // Send the frame data to the server via WebSocket
+                            socket.emit('stream_frame', frameData);
+
+                            // Schedule the next frame
+                            requestAnimationFrame(sendFrame);
+                        }
+
+                        // Start sending video frames to the server
+                        sendFrame();
+                    })
+                    .catch((error) => {
+                        console.error('Error accessing video stream:', error);
+                    });
+            } else {
+                console.error('getUserMedia is not supported in this browser.');
+            }
+        });
+    </script>
+</head>
+<body>
+    <video id="video" autoplay></video>
+</body>
+</html>
